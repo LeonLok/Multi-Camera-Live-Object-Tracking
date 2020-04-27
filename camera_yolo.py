@@ -1,0 +1,86 @@
+from __future__ import division, print_function, absolute_import
+
+import os
+import cv2
+from base_camera import BaseCamera
+
+import warnings
+import numpy as np
+from PIL import Image
+from yolo import YOLO
+from deep_sort import preprocessing
+from deep_sort.detection import Detection
+
+warnings.filterwarnings('ignore')
+
+class Camera(BaseCamera):
+    video_source = 0
+
+    def __init__(self, feed_type, device, port_list):
+        super(Camera, self).__init__(feed_type, device, port_list)
+
+
+    @staticmethod
+    def set_video_source(source):
+        Camera.video_source = source
+
+    @staticmethod
+    def yolo_frames(encoder, tracker, device):  # TODO add server name as argument
+        yolo = YOLO()
+        nms_max_overlap = 1.0
+
+        numFrames = 0
+
+        get_feed_from = ('camera', device)
+
+        while True:
+            frame = BaseCamera.get_frame(get_feed_from)
+            image_height, image_width = frame.shape[:2]
+
+            if frame is None:
+                break
+
+            numFrames += 1
+
+            if numFrames % 2 == True:
+
+                #image = Image.fromarray(frame)
+                image = Image.fromarray(frame[..., ::-1])  # bgr to rgb
+                boxs = yolo.detect_image(image)
+                # print("box_num",len(boxs))
+                features = encoder(frame, boxs)
+
+                # score to 1.0 here).
+                detections = [Detection(bbox, 1.0, feature) for bbox, feature in zip(boxs, features)]
+
+                # Run non-maxima suppression.
+                boxes = np.array([d.tlwh for d in detections])
+                scores = np.array([d.confidence for d in detections])
+                indices = preprocessing.non_max_suppression(boxes, nms_max_overlap, scores)
+                detections = [detections[i] for i in indices]
+
+                # Call the tracker
+                tracker.predict()
+                tracker.update(detections)
+
+                track_count = int(0)  # reset counter to 0
+
+                for track in tracker.tracks:
+                    if not track.is_confirmed() or track.time_since_update > 1:
+                        continue
+                    bbox = track.to_tlbr()
+                    cv2.rectangle(frame, (int(bbox[0]), int(bbox[1])), (int(bbox[2]), int(bbox[3])), (255, 255, 255),
+                                  2)  # WHITE BOX
+                    cv2.putText(frame, str(track.track_id), (int(bbox[0]), int(bbox[1])), 0, 5e-3 * 200, (0, 255, 0), 2)
+
+                    track_count += 1  # add 1 for each tracking object
+
+                cv2.putText(frame, "Current number of people: " + str(track_count), (int(20), int(80)), 0, 5e-3 * 170,
+                            (0, 255, 0), 2)
+
+                for det in detections:
+                    bbox = det.to_tlbr()
+                    cv2.rectangle(frame, (int(bbox[0]), int(bbox[1])), (int(bbox[2]), int(bbox[3])), (255, 0, 0),
+                                  2)  # BLUE BOX
+
+                yield track_count, frame
