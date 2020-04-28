@@ -70,17 +70,17 @@ class Camera(BaseCamera):
                         continue
                     bbox = track.to_tlbr()
                     cv2.rectangle(frame, (int(bbox[0]), int(bbox[1])), (int(bbox[2]), int(bbox[3])), (255, 255, 255),
-                                  2)  # WHITE BOX
+                                  1)  # WHITE BOX
                     cv2.putText(frame, str(track.track_id), (int(bbox[0]), int(bbox[1])), 0, 5e-3 * 200, (0, 255, 0), 2)
 
                     track_count += 1  # add 1 for each tracking object
 
-                cv2.putText(frame, "Current number of people: " + str(track_count), (int(20), int(80)), 0, 5e-3 * 170,
-                            (0, 255, 0), 2)
+                cv2.putText(frame, "Current count: " + str(track_count), (int(20), int(60)), 0, 5e-3 * 120,
+                            (0, 255, 0), 1)
 
                 for det in detections:
                     bbox = det.to_tlbr()
                     cv2.rectangle(frame, (int(bbox[0]), int(bbox[1])), (int(bbox[2]), int(bbox[3])), (255, 0, 0),
-                                  2)  # BLUE BOX
+                                  1)  # BLUE BOX
 
                 yield track_count, frame
