@@ -3,7 +3,6 @@ import threading
 from importlib import import_module
 import imagezmq
 import datetime
-import os
 
 try:
     from greenlet import getcurrent as get_ident
