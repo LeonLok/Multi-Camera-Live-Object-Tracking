@@ -3,6 +3,7 @@ import threading
 from importlib import import_module
 import imagezmq
 import datetime
+import os
 
 try:
     from greenlet import getcurrent as get_ident
@@ -140,9 +141,10 @@ class BaseCamera:
                     if current_minute % write_interval == 0:  # write to file once only every write_interval minutes
                         if current_minute not in count_dict:
                             count_dict[current_minute] = True
-                            print('Writing current count ({}) to file.')
-                            count_file = open('counts for {}, camera {}.txt'.format(current_date, device), 'a')
-                            count_file.write(str(rounded_now) + ", " + str(track_count) + "\n")
+                            print('Writing current count ({}) to file.'.format(track_count))
+                            output_filename = 'counts for {}, camera {}.txt'.format(current_date, device)
+                            count_file = open(output_filename, 'a')
+                            count_file.write(str(rounded_now) + ", " + device + ', ' + str(track_count) + "\n")
                             count_file.close()
                 BaseCamera.frame[unique_name] = frame
                 BaseCamera.event[unique_name].set()  # send signal to clients
