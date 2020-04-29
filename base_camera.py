@@ -125,23 +125,34 @@ class BaseCamera:
 
         device = unique_name[1]
         frames_iterator = cls.yolo_frames(encoder, tracker, device)
-        count_file = open('device {} counts.txt'.format(device), 'w')
 
+        current_date = datetime.datetime.now().date()
+        count_dict = {}  # initiate dict for storing counts
         try:
             for track_count, frame in frames_iterator:
                 now = datetime.datetime.now()
-                count_file.write(str(now) + ", " + str(track_count) + "\n")
+                rounded_now = now - datetime.timedelta(microseconds=now.microsecond)  # round to nearest second
+                current_minute = now.time().minute
+                if current_minute == 0 and len(count_dict) > 1:
+                    count_dict = {}  # reset counts every hour
+                else:
+                    write_interval = 10
+                    if current_minute % write_interval == 0:  # write to file once only every write_interval minutes
+                        if current_minute not in count_dict:
+                            count_dict[current_minute] = True
+                            print('Writing current count ({}) to file.')
+                            count_file = open('counts for {}, camera {}.txt'.format(current_date, device), 'a')
+                            count_file.write(str(rounded_now) + ", " + str(track_count) + "\n")
+                            count_file.close()
                 BaseCamera.frame[unique_name] = frame
                 BaseCamera.event[unique_name].set()  # send signal to clients
                 time.sleep(0)
                 if time.time() - BaseCamera.last_access[unique_name] > 60:
-                    count_file.close()
                     frames_iterator.close()
                     print('Stopping YOLO thread due to inactivity')
                     pass
         except Exception:
             BaseCamera.event[unique_name].set()  # send signal to clients
-            count_file.close()
             frames_iterator.close()
             print('Stopping YOLO thread ({}) due to error.'.format(device))
 
