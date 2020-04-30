@@ -149,18 +149,16 @@ class BaseCamera:
                 time.sleep(0)
                 if time.time() - BaseCamera.last_access[unique_name] > 60:
                     frames_iterator.close()
-                    print('Stopping YOLO thread due to inactivity')
+                    print('Stopping YOLO thread for device {} due to inactivity.'.format(device))
                     pass
         except Exception:
             BaseCamera.event[unique_name].set()  # send signal to clients
             frames_iterator.close()
-            print('Stopping YOLO thread ({}) due to error.'.format(device))
+            print('Stopping YOLO thread for device {} due to error.'.format(device))
 
     @classmethod
     def server_thread(cls, unique_name, port):
         device = unique_name[1]
-        print(device, port)
-
         image_hub = imagezmq.ImageHub(open_port='tcp://*:{}'.format(port))
         frames_iterator = cls.server_frames(image_hub)
 
@@ -172,28 +170,27 @@ class BaseCamera:
                 if time.time() - BaseCamera.last_access[unique_name] > 5:
                     frames_iterator.close()
                     image_hub.zmq_socket.close()
-                    print('Closing server socket.')
-                    print('Stopping camera thread ({}) due to inactivity'.format(device))
+                    print('Closing server socket at port {}.'.format(port))
+                    print('Stopping server thread for device {} due to inactivity.'.format(device))
                     pass
         except Exception:
             frames_iterator.close()
             image_hub.zmq_socket.close()
-
-            print('Closing server socket.')
-            print('Stopping camera thread  due to error.')
+            print('Closing server socket at port {}.'.format(port))
+            print('Stopping server thread for device {} due to error.'.format(device))
 
     @classmethod
-    def _thread(cls, unique_name, port_list):  # TODO add kwargs for source for YOLO threads?
+    def _thread(cls, unique_name, port_list):
         feed_type = unique_name[0]
         device = unique_name[1]
         if feed_type == 'camera':
-            print('Starting server thread ({})'.format(unique_name))
             port = port_list[int(device)]
+            print('Starting server thread for device {} at port {}.'.format(unique_name, port))
             cls.server_thread(unique_name, port)
 
         elif feed_type == 'yolo':
             """Camera background thread."""
-            print('Starting YOLO thread ({})'.format(device))
+            print('Starting YOLO thread for device {}.'.format(device))
             cls.yolo_thread(unique_name)
 
         BaseCamera.threads[unique_name] = None
