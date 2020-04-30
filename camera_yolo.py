@@ -1,6 +1,5 @@
 from __future__ import division, print_function, absolute_import
 
-import os
 import cv2
 from base_camera import BaseCamera
 
@@ -42,12 +41,11 @@ class Camera(BaseCamera):
 
             numFrames += 1
 
-            if numFrames % 2 == True:
+            if numFrames % 2 == 0:
 
                 #image = Image.fromarray(frame)
-                image = Image.fromarray(frame[..., ::-1])  # bgr to rgb
+                image = Image.fromarray(frame[..., ::-1])  # convert bgr to rgb
                 boxs = yolo.detect_image(image)
-                # print("box_num",len(boxs))
                 features = encoder(frame, boxs)
 
                 # score to 1.0 here).
@@ -73,7 +71,7 @@ class Camera(BaseCamera):
                                   1)  # WHITE BOX
                     cv2.putText(frame, str(track.track_id), (int(bbox[0]), int(bbox[1])), 0, 5e-3 * 200, (0, 255, 0), 2)
 
-                    track_count += 1  # add 1 for each tracking object
+                    track_count += 1  # add 1 for each tracked object
 
                 cv2.putText(frame, "Current count: " + str(track_count), (int(20), int(60)), 0, 5e-3 * 120,
                             (0, 255, 0), 1)
