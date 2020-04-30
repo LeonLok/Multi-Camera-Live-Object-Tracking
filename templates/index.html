@@ -21,7 +21,7 @@
 </head>
 <body>
 
-<h1>Restaurant Customer Detection, Tracking, and Counting</h1>
+<h1>Customer Detection, Tracking, and Counting</h1>
 
 <div class="clearfix">
   <div class="img-container">
@@ -41,12 +41,9 @@
   </div>
   <div class="img-container">
         <p align="center">YOLO stream 2</p>
-        <!img src="{{ url_for('video_feed', feed_type='yolo', device=1) }}" class="center"  style="border:1px solid black;width:100%" alt="YOLO Stream 2">
+        <img src="{{ url_for('video_feed', feed_type='yolo', device=1) }}" class="center"  style="border:1px solid black;width:100%" alt="YOLO Stream 2">
   </div>
 </div>
-
-
-<p>Note that we also use the clearfix hack to take care of the layout flow, and that we add the box-sizing property to make sure that the image container doesn't break due to extra padding. Try to remove this code to see the effect.</p>
 
 </body>
 </html>
