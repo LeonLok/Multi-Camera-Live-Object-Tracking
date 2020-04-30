@@ -185,7 +185,7 @@ class BaseCamera:
         device = unique_name[1]
         if feed_type == 'camera':
             port = port_list[int(device)]
-            print('Starting server thread for device {} at port {}.'.format(unique_name, port))
+            print('Starting server thread for device {} at port {}.'.format(device, port))
             cls.server_thread(unique_name, port)
 
         elif feed_type == 'yolo':
