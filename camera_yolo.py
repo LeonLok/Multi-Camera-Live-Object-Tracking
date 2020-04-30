@@ -42,7 +42,7 @@ class Camera(BaseCamera):
 
             numFrames += 1
 
-            if numFrames % 2 == True:
+            if numFrames % 2 == 0:
 
                 #image = Image.fromarray(frame)
                 image = Image.fromarray(frame[..., ::-1])  # bgr to rgb
