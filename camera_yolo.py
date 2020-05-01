@@ -45,11 +45,12 @@ class Camera(BaseCamera):
 
                 #image = Image.fromarray(frame)
                 image = Image.fromarray(frame[..., ::-1])  # convert bgr to rgb
-                boxs = yolo.detect_image(image)
+                boxs = yolo.detect_image(image)[0]
+                confidence = yolo.detect_image(image)[1]
                 features = encoder(frame, boxs)
 
                 # score to 1.0 here).
-                detections = [Detection(bbox, 1.0, feature) for bbox, feature in zip(boxs, features)]
+                detections = [Detection(bbox, confidence, feature) for bbox, confidence, feature in zip(boxs, confidence, features)]
 
                 # Run non-maxima suppression.
                 boxes = np.array([d.tlwh for d in detections])
@@ -69,16 +70,20 @@ class Camera(BaseCamera):
                     bbox = track.to_tlbr()
                     cv2.rectangle(frame, (int(bbox[0]), int(bbox[1])), (int(bbox[2]), int(bbox[3])), (255, 255, 255),
                                   1)  # WHITE BOX
-                    cv2.putText(frame, str(track.track_id), (int(bbox[0]), int(bbox[1])), 0, 5e-3 * 200, (0, 255, 0), 2)
+                    cv2.putText(frame, "Track ID: " + str(track.track_id), (int(bbox[0]), int(bbox[1])), 0,
+                                2e-3 * frame.shape[0], (0, 255, 0), 1)
 
                     track_count += 1  # add 1 for each tracked object
 
-                cv2.putText(frame, "Current count: " + str(track_count), (int(20), int(60)), 0, 5e-3 * 120,
+                cv2.putText(frame, "Current count: " + str(track_count), (int(20), int(60)), 0, 2e-3 * frame.shape[0],
                             (0, 255, 0), 1)
 
                 for det in detections:
                     bbox = det.to_tlbr()
+                    score = "%.2f" % round(det.confidence * 100, 2)
                     cv2.rectangle(frame, (int(bbox[0]), int(bbox[1])), (int(bbox[2]), int(bbox[3])), (255, 0, 0),
                                   1)  # BLUE BOX
+                    cv2.putText(frame, score, (int(bbox[0]), int(bbox[3])), 0,
+                                2e-3 * frame.shape[0], (0, 255, 0), 1)
 
                 yield track_count, frame
