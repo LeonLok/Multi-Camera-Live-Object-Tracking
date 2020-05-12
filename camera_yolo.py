@@ -45,12 +45,11 @@ class Camera(BaseCamera):
 
                 #image = Image.fromarray(frame)
                 image = Image.fromarray(frame[..., ::-1])  # convert bgr to rgb
-                boxs = yolo.detect_image(image)[0]
-                confidence = yolo.detect_image(image)[1]
-                features = encoder(frame, boxs)
+                boxes, confidence = yolo.detect_image(image)
+                features = encoder(frame, boxes)
 
                 # score to 1.0 here).
-                detections = [Detection(bbox, confidence, feature) for bbox, confidence, feature in zip(boxs, confidence, features)]
+                detections = [Detection(bbox, confidence, feature) for bbox, confidence, feature in zip(boxes, confidence, features)]
 
                 # Run non-maxima suppression.
                 boxes = np.array([d.tlwh for d in detections])
