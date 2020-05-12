@@ -152,10 +152,11 @@ class BaseCamera:
                     frames_iterator.close()
                     print('Stopping YOLO thread for device {} due to inactivity.'.format(device))
                     pass
-        except Exception:
+        except Exception as e:
             BaseCamera.event[unique_name].set()  # send signal to clients
             frames_iterator.close()
             print('Stopping YOLO thread for device {} due to error.'.format(device))
+            print(e)
 
     @classmethod
     def server_thread(cls, unique_name, port):
@@ -174,11 +175,12 @@ class BaseCamera:
                     print('Closing server socket at port {}.'.format(port))
                     print('Stopping server thread for device {} due to inactivity.'.format(device))
                     pass
-        except Exception:
+        except Exception as e:
             frames_iterator.close()
             image_hub.zmq_socket.close()
             print('Closing server socket at port {}.'.format(port))
             print('Stopping server thread for device {} due to error.'.format(device))
+            print(e)
 
     @classmethod
     def _thread(cls, unique_name, port_list):
