@@ -182,8 +182,7 @@ class BaseCamera:
 
     @classmethod
     def _thread(cls, unique_name, port_list):
-        feed_type = unique_name[0]
-        device = unique_name[1]
+        feed_type, device = unique_name
         if feed_type == 'camera':
             port = port_list[int(device)]
             print('Starting server thread for device {} at port {}.'.format(device, port))
