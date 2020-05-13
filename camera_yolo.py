@@ -109,10 +109,11 @@ class Camera(BaseCamera):
                                   1)  # BLUE BOX
                     cv2.putText(frame, score, (int(bbox[0]), int(bbox[3])), 0,
                                 2e-3 * frame.shape[0], (0, 255, 0), 1)
-                    if not tracking:
-                        det_count += 1
+                    det_count += 1
 
                 if tracking:
-                    yield track_count, frame
+                    count = track_count
                 else:
-                    yield det_count, frame
+                    count = det_count
+
+                yield count, frame
