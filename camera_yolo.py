@@ -50,7 +50,7 @@ class Camera(BaseCamera):
         yolo = YOLO()
         nms_max_overlap = 1.0
 
-        numFrames = 0
+        num_frames = 0
 
         get_feed_from = ('camera', device)
 
@@ -61,59 +61,60 @@ class Camera(BaseCamera):
             if frame is None:
                 break
 
-            numFrames += 1
+            num_frames += 1
 
-            if numFrames % 2 == 0:
+            if num_frames % 2 != 0:  # only process frames at set number of frame intervals
+                continue
 
-                #image = Image.fromarray(frame)
-                image = Image.fromarray(frame[..., ::-1])  # convert bgr to rgb
-                boxes, confidence = yolo.detect_image(image)
-                if tracking:
-                    features = encoder(frame, boxes)  # TODO how to deal with removing encoder with deepsort off?
+            #image = Image.fromarray(frame)
+            image = Image.fromarray(frame[..., ::-1])  # convert bgr to rgb
+            boxes, confidence = yolo.detect_image(image)
+            if tracking:
+                features = encoder(frame, boxes)  # TODO how to deal with removing encoder with deepsort off?
 
-                    detections = [Detection(bbox, confidence, feature) for bbox, confidence, feature in zip(boxes, confidence, features)]
-                else:
-                    detections = [Detection_YOLO(bbox, confidence) for bbox, confidence in zip(boxes, confidence)]
-                # Run non-maxima suppression.
-                boxes = np.array([d.tlwh for d in detections])
-                scores = np.array([d.confidence for d in detections])
-                indices = preprocessing.non_max_suppression(boxes, nms_max_overlap, scores)
-                detections = [detections[i] for i in indices]
+                detections = [Detection(bbox, confidence, feature) for bbox, confidence, feature in zip(boxes, confidence, features)]
+            else:
+                detections = [Detection_YOLO(bbox, confidence) for bbox, confidence in zip(boxes, confidence)]
+            # Run non-maxima suppression.
+            boxes = np.array([d.tlwh for d in detections])
+            scores = np.array([d.confidence for d in detections])
+            indices = preprocessing.non_max_suppression(boxes, nms_max_overlap, scores)
+            detections = [detections[i] for i in indices]
 
-                if tracking:
-                    # Call the tracker
-                    tracker.predict()
-                    tracker.update(detections)
+            if tracking:
+                # Call the tracker
+                tracker.predict()
+                tracker.update(detections)
 
-                    track_count = int(0)  # reset counter to 0
+                track_count = int(0)  # reset counter to 0
 
-                    for track in tracker.tracks:
-                        if not track.is_confirmed() or track.time_since_update > 1:
-                            continue
-                        bbox = track.to_tlbr()
-                        cv2.rectangle(frame, (int(bbox[0]), int(bbox[1])), (int(bbox[2]), int(bbox[3])), (255, 255, 255),
-                                      1)  # WHITE BOX
-                        cv2.putText(frame, "Track ID: " + str(track.track_id), (int(bbox[0]), int(bbox[1])), 0,
-                                    2e-3 * frame.shape[0], (0, 255, 0), 1)
-
-                        track_count += 1  # add 1 for each tracked object
-
-                    cv2.putText(frame, "Current count: " + str(track_count), (int(20), int(60)), 0, 2e-3 * frame.shape[0],
-                                (0, 255, 0), 1)
-
-                det_count = int(0)
-                for det in detections:
-                    bbox = det.to_tlbr()
-                    score = "%.2f" % round(det.confidence * 100, 2)
-                    cv2.rectangle(frame, (int(bbox[0]), int(bbox[1])), (int(bbox[2]), int(bbox[3])), (255, 0, 0),
-                                  1)  # BLUE BOX
-                    cv2.putText(frame, score, (int(bbox[0]), int(bbox[3])), 0,
+                for track in tracker.tracks:
+                    if not track.is_confirmed() or track.time_since_update > 1:
+                        continue
+                    bbox = track.to_tlbr()
+                    cv2.rectangle(frame, (int(bbox[0]), int(bbox[1])), (int(bbox[2]), int(bbox[3])), (255, 255, 255),
+                                  1)  # WHITE BOX
+                    cv2.putText(frame, "Track ID: " + str(track.track_id), (int(bbox[0]), int(bbox[1])), 0,
                                 2e-3 * frame.shape[0], (0, 255, 0), 1)
-                    det_count += 1
 
-                if tracking:
-                    count = track_count
-                else:
-                    count = det_count
+                    track_count += 1  # add 1 for each tracked object
 
-                yield count, frame
+                cv2.putText(frame, "Current count: " + str(track_count), (int(20), int(60)), 0, 2e-3 * frame.shape[0],
+                            (0, 255, 0), 1)
+
+            det_count = int(0)
+            for det in detections:
+                bbox = det.to_tlbr()
+                score = "%.2f" % round(det.confidence * 100, 2)
+                cv2.rectangle(frame, (int(bbox[0]), int(bbox[1])), (int(bbox[2]), int(bbox[3])), (255, 0, 0),
+                              1)  # BLUE BOX
+                cv2.putText(frame, score, (int(bbox[0]), int(bbox[3])), 0,
+                            2e-3 * frame.shape[0], (0, 255, 0), 1)
+                det_count += 1
+
+            if tracking:
+                count = track_count
+            else:
+                count = det_count
+
+            yield count, frame
