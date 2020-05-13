@@ -96,6 +96,7 @@ class YOLO(object):
             })
         return_boxs = []
         return_scores = []
+        return_class_name = []
         for i, c in reversed(list(enumerate(out_classes))):
             predicted_class = self.class_names[c]
             if predicted_class != 'person' :
@@ -114,8 +115,9 @@ class YOLO(object):
                 y = 0 
             return_boxs.append([x,y,w,h])
             return_scores.append(score)
+            return_class_name.append([predicted_class])
 
-        return return_boxs, return_scores
+        return return_boxs, return_scores, return_class_name
 
     def close_session(self):
         self.sess.close()
