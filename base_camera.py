@@ -1,6 +1,5 @@
 import time
 import threading
-from importlib import import_module
 import imagezmq
 import datetime
 
@@ -97,7 +96,7 @@ class BaseCamera:
         raise RuntimeError('Must be implemented by subclasses')
 
     @staticmethod
-    def yolo_frames(source, encoder, tracker):
+    def yolo_frames(unique_name):
         """"Generator that returns frames from the camera."""
         raise RuntimeError('Must be implemented by subclasses')
 
@@ -108,23 +107,9 @@ class BaseCamera:
 
     @classmethod
     def yolo_thread(cls, unique_name):
-        gdet = import_module('tools.generate_detections')
-        nn_matching = import_module('deep_sort.nn_matching')
-        Tracker = import_module('deep_sort.tracker').Tracker
-
-        # Definition of the parameters
-        max_cosine_distance = 0.3
-        nn_budget = None
-
-        # deep_sort
-        model_filename = 'model_data/mars-small128.pb'
-        encoder = gdet.create_box_encoder(model_filename, batch_size=1)
-
-        metric = nn_matching.NearestNeighborDistanceMetric("cosine", max_cosine_distance, nn_budget)
-        tracker = Tracker(metric)
-
         device = unique_name[1]
-        frames_iterator = cls.yolo_frames(encoder, tracker, device)
+
+        frames_iterator = cls.yolo_frames(unique_name)
 
         current_date = datetime.datetime.now().date()
         count_dict = {}  # initiate dict for storing counts
