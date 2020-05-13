@@ -70,7 +70,7 @@ class Camera(BaseCamera):
             image = Image.fromarray(frame[..., ::-1])  # convert bgr to rgb
             boxes, confidence = yolo.detect_image(image)
             if tracking:
-                features = encoder(frame, boxes)  # TODO how to deal with removing encoder with deepsort off?
+                features = encoder(frame, boxes)
 
                 detections = [Detection(bbox, confidence, feature) for bbox, confidence, feature in zip(boxes, confidence, features)]
             else:
