@@ -23,7 +23,7 @@ class Camera(BaseCamera):
     def yolo_frames(unique_name):
         device = unique_name[1]
 
-        tracking = False
+        tracking = True
 
         if tracking:
             gdet = import_module('tools.generate_detections')
@@ -62,7 +62,7 @@ class Camera(BaseCamera):
 
             #image = Image.fromarray(frame)
             image = Image.fromarray(frame[..., ::-1])  # convert bgr to rgb
-            boxes, confidence = yolo.detect_image(image)
+            boxes, confidence, classes = yolo.detect_image(image)
             if tracking:
                 features = encoder(frame, boxes)
 
@@ -88,22 +88,25 @@ class Camera(BaseCamera):
                     bbox = track.to_tlbr()
                     cv2.rectangle(frame, (int(bbox[0]), int(bbox[1])), (int(bbox[2]), int(bbox[3])), (255, 255, 255),
                                   1)  # WHITE BOX
-                    cv2.putText(frame, "Track ID: " + str(track.track_id), (int(bbox[0]), int(bbox[1])), 0,
-                                2e-3 * frame.shape[0], (0, 255, 0), 1)
+                    cv2.putText(frame, "ID: " + str(track.track_id), (int(bbox[0]), int(bbox[1])), 0,
+                                1.5e-3 * frame.shape[0], (0, 255, 0), 1)
 
                     track_count += 1  # add 1 for each tracked object
 
-                cv2.putText(frame, "Current count: " + str(track_count), (int(20), int(60)), 0, 2e-3 * frame.shape[0],
-                            (0, 255, 0), 1)
+                cv2.putText(frame, "Current count: " + str(track_count), (int(20), int(40)), 0, 2e-3 * frame.shape[0],
+                            (255, 255, 255), 2)
 
             det_count = int(0)
             for det in detections:
                 bbox = det.to_tlbr()
-                score = "%.2f" % round(det.confidence * 100, 2)
+                score = "%.2f" % (det.confidence * 100) + "%"
                 cv2.rectangle(frame, (int(bbox[0]), int(bbox[1])), (int(bbox[2]), int(bbox[3])), (255, 0, 0),
                               1)  # BLUE BOX
-                cv2.putText(frame, score, (int(bbox[0]), int(bbox[3])), 0,
-                            2e-3 * frame.shape[0], (0, 255, 0), 1)
+                #if len(classes) > 0:
+                cls = classes[0][0]
+                cv2.putText(frame, str(cls) + " " + score, (int(bbox[0]), int(bbox[3])), 0,
+                            1.5e-3 * frame.shape[0], (0, 255, 0), 1)
+
                 det_count += 1
 
             if tracking:
