@@ -1,6 +1,7 @@
 from importlib import import_module
 from flask import Flask, render_template, Response
 import cv2
+import time
 
 
 app = Flask(__name__)
@@ -15,12 +16,25 @@ def index():
 def gen(camera_stream, feed_type, device):
     """Video streaming generator function."""
     unique_name = (feed_type, device)
+
+    num_frames = 0
+    total_time = 0
     while True:
+        time_start = time.time()
+
         frame = camera_stream.get_frame(unique_name)
         if frame is None:
             break
-        frame = cv2.imencode('.jpg', frame)[1].tobytes()  # Remove this line for test camera
 
+        num_frames += 1
+
+        time_now = time.time()
+        total_time += time_now - time_start
+        fps = num_frames / total_time
+
+        cv2.putText(frame, "FPS: %.2f" % fps, (int(20), int(80)), 0, 2e-3 * frame.shape[0], (0, 255, 0), 1)
+
+        frame = cv2.imencode('.jpg', frame)[1].tobytes()  # Remove this line for test camera
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
