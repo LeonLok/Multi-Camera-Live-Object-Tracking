@@ -14,16 +14,10 @@ from importlib import import_module
 
 warnings.filterwarnings('ignore')
 
-class Camera(BaseCamera):
-    video_source = 0
 
+class Camera(BaseCamera):
     def __init__(self, feed_type, device, port_list):
         super(Camera, self).__init__(feed_type, device, port_list)
-
-
-    @staticmethod
-    def set_video_source(source):
-        Camera.video_source = source
 
     @staticmethod
     def yolo_frames(unique_name):
