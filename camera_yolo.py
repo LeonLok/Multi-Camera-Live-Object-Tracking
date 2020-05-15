@@ -12,6 +12,7 @@ from deep_sort.detection import Detection
 from deep_sort.detection_yolo import Detection_YOLO
 from importlib import import_module
 from collections import Counter
+import datetime
 
 warnings.filterwarnings('ignore')
 
@@ -49,6 +50,8 @@ class Camera(BaseCamera):
 
         get_feed_from = ('camera', device)
 
+        current_date = datetime.datetime.now().date()
+        count_dict = {}  # initiate dict for storing counts
         while True:
             frame = BaseCamera.get_frame(get_feed_from)
             # image_height, image_width = frame.shape[:2]
@@ -114,6 +117,7 @@ class Camera(BaseCamera):
                     class_counter[cls] += 1
                 det_count += 1
 
+            # display counts for each class as they appear
             y = 80
             for cls in class_counter:
                 class_count = class_counter[cls]
@@ -121,9 +125,38 @@ class Camera(BaseCamera):
                             (255, 255, 255), 2)
                 y += 20
 
+            # use YOLO counts if tracking is turned off
             if tracking:
                 count = track_count
             else:
                 count = det_count
 
-            yield count, frame
+            # calculate current minute
+            now = datetime.datetime.now()
+            rounded_now = now - datetime.timedelta(microseconds=now.microsecond)  # round to nearest second
+            current_minute = now.time().minute
+
+            if current_minute == 0 and len(count_dict) > 1:
+                count_dict = {}  # reset counts every hour
+            else:
+                # write counts to file for every set interval of the hour
+                write_interval = 5
+                if current_minute % write_interval == 0:  # write to file once only every write_interval minutes
+                    if current_minute not in count_dict:
+                        count_dict[current_minute] = True
+                        total_filename = 'Total counts for {}, camera {}.txt'.format(current_date, device)
+                        total_count_file = open(total_filename, 'a')
+                        print('Writing current total count ({}) to file.'.format(count))
+                        total_count_file.write(str(rounded_now) + ", " + device + ', ' + str(count) + "\n")
+                        total_count_file.close()
+
+                        # if class exists in class counter, create file and write counts
+                        for cls in class_counter:
+                            class_count = class_counter[cls]
+                            class_filename = '{} counts for {}, camera {}.txt'.format(cls, current_date, device)
+                            class_count_file = open(class_filename, 'a')
+                            print('Writing current {} count ({}) to file.'.format(cls, class_count))
+                            class_count_file.write(str(rounded_now) + ", " + device + ', ' + str(class_count) + "\n")
+                            class_count_file.close()
+
+            yield frame
