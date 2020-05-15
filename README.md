@@ -1,4 +1,4 @@
-# Flask Video Streaming and Live Customer Counting with YOLO v4 and Deep SORT
+# Flask Video Streaming With YOLO v4 and Deep SORT for Live Customer Counting
 Multiple live video streaming with people detection, tracking, and counting. Uses YOLO v4 as the pre-trained model for object detection and Deep SORT trained on the MARS dataset for object tracking. Each video stream uses ImageZMQ for asynchronous processing.
 
 Project is not yet complete; README will be fully updated after completion.
