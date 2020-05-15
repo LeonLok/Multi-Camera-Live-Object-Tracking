@@ -11,6 +11,7 @@ from deep_sort import preprocessing
 from deep_sort.detection import Detection
 from deep_sort.detection_yolo import Detection_YOLO
 from importlib import import_module
+from collections import Counter
 
 warnings.filterwarnings('ignore')
 
@@ -66,14 +67,18 @@ class Camera(BaseCamera):
             if tracking:
                 features = encoder(frame, boxes)
 
-                detections = [Detection(bbox, confidence, feature) for bbox, confidence, feature in zip(boxes, confidence, features)]
+                detections = [Detection(bbox, confidence, cls, feature) for bbox, confidence, cls, feature in
+                              zip(boxes, confidence, classes, features)]
             else:
-                detections = [Detection_YOLO(bbox, confidence) for bbox, confidence in zip(boxes, confidence)]
+                detections = [Detection_YOLO(bbox, confidence, cls) for bbox, confidence, cls in
+                              zip(boxes, confidence, classes)]
             # Run non-maxima suppression.
             boxes = np.array([d.tlwh for d in detections])
             scores = np.array([d.confidence for d in detections])
             indices = preprocessing.non_max_suppression(boxes, nms_max_overlap, scores)
             detections = [detections[i] for i in indices]
+
+            class_counter = Counter()  # store counts of each detected class
 
             if tracking:
                 # Call the tracker
@@ -93,7 +98,7 @@ class Camera(BaseCamera):
 
                     track_count += 1  # add 1 for each tracked object
 
-                cv2.putText(frame, "Current count: " + str(track_count), (int(20), int(40)), 0, 2e-3 * frame.shape[0],
+                cv2.putText(frame, "Current total count: " + str(track_count), (int(20), int(60)), 0, 2e-3 * frame.shape[0],
                             (255, 255, 255), 2)
 
             det_count = int(0)
@@ -102,12 +107,19 @@ class Camera(BaseCamera):
                 score = "%.2f" % (det.confidence * 100) + "%"
                 cv2.rectangle(frame, (int(bbox[0]), int(bbox[1])), (int(bbox[2]), int(bbox[3])), (255, 0, 0),
                               1)  # BLUE BOX
-                #if len(classes) > 0:
-                cls = classes[0]
-                cv2.putText(frame, str(cls) + " " + score, (int(bbox[0]), int(bbox[3])), 0,
-                            1.5e-3 * frame.shape[0], (0, 255, 0), 1)
-
+                if len(classes) > 0:
+                    cls = det.cls
+                    cv2.putText(frame, str(cls) + " " + score, (int(bbox[0]), int(bbox[3])), 0,
+                                1.5e-3 * frame.shape[0], (0, 255, 0), 1)
+                    class_counter[cls] += 1
                 det_count += 1
+
+            y = 80
+            for cls in class_counter:
+                class_count = class_counter[cls]
+                cv2.putText(frame, str(cls) + " " + str(class_count), (int(20), int(y)), 0, 2e-3 * frame.shape[0],
+                            (255, 255, 255), 2)
+                y += 20
 
             if tracking:
                 count = track_count

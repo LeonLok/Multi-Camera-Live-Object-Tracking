@@ -32,7 +32,7 @@ def gen(camera_stream, feed_type, device):
         total_time += time_now - time_start
         fps = num_frames / total_time
 
-        cv2.putText(frame, "FPS: %.2f" % fps, (int(20), int(60)), 0, 2e-3 * frame.shape[0], (255, 255, 255), 2)
+        cv2.putText(frame, "FPS: %.2f" % fps, (int(20), int(40)), 0, 2e-3 * frame.shape[0], (255, 255, 255), 2)
 
         frame = cv2.imencode('.jpg', frame)[1].tobytes()  # Remove this line for test camera
         yield (b'--frame\r\n'

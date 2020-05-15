@@ -26,9 +26,10 @@ class Detection(object):
 
     """
 
-    def __init__(self, tlwh, confidence, feature):
+    def __init__(self, tlwh, confidence, cls, feature):
         self.tlwh = np.asarray(tlwh, dtype=np.float)
         self.confidence = float(confidence)
+        self.cls = cls
         self.feature = np.asarray(feature, dtype=np.float32)
 
     def to_tlbr(self):
