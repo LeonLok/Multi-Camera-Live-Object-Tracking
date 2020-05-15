@@ -103,7 +103,7 @@ class Camera(BaseCamera):
                 cv2.rectangle(frame, (int(bbox[0]), int(bbox[1])), (int(bbox[2]), int(bbox[3])), (255, 0, 0),
                               1)  # BLUE BOX
                 #if len(classes) > 0:
-                cls = classes[0][0]
+                cls = classes[0]
                 cv2.putText(frame, str(cls) + " " + score, (int(bbox[0]), int(bbox[3])), 0,
                             1.5e-3 * frame.shape[0], (0, 255, 0), 1)
 
