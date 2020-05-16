@@ -36,6 +36,8 @@ to
 ```
 tracking = False
 ```
+## Changing Camera Stream Names
+To change the name of each camera stream, edit cam_id in the camera client files.
 
 ## Counts
 The total current object count is automatically stored in a text file every set interval of the hour for every detected object. Each newly detected class also creates a new class counts file to store the current count for that class and will also appear in the YOLO stream. 
