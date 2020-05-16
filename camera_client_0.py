@@ -6,7 +6,7 @@ path = "rtsp://192.168.1.69:8080//h264_ulaw.sdp"  # change to your IP stream add
 cap = VideoStream(path)
 
 sender = imagezmq.ImageSender(connect_to='tcp://localhost:5555')  # change to IP address and port of server thread
-cam_id = '0'
+cam_id = 'Camera 1'  # this name will be displayed on the corresponding camera stream
 
 stream = cap.start()
 

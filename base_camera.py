@@ -132,8 +132,8 @@ class BaseCamera:
 
         frames_iterator = cls.server_frames(image_hub)
         try:
-            for frame in frames_iterator:
-                BaseCamera.frame[unique_name] = frame
+            for cam_id, frame in frames_iterator:
+                BaseCamera.frame[unique_name] = cam_id, frame
                 BaseCamera.event[unique_name].set()  # send signal to clients
                 time.sleep(0)
                 if time.time() - BaseCamera.last_access[unique_name] > 5:

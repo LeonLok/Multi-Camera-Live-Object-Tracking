@@ -53,7 +53,7 @@ class Camera(BaseCamera):
         current_date = datetime.datetime.now().date()
         count_dict = {}  # initiate dict for storing counts
         while True:
-            frame = BaseCamera.get_frame(get_feed_from)
+            cam_id, frame = BaseCamera.get_frame(get_feed_from)
             # image_height, image_width = frame.shape[:2]
 
             if frame is None:
@@ -101,7 +101,7 @@ class Camera(BaseCamera):
 
                     track_count += 1  # add 1 for each tracked object
 
-                cv2.putText(frame, "Current total count: " + str(track_count), (int(20), int(60)), 0, 2e-3 * frame.shape[0],
+                cv2.putText(frame, "Current total count: " + str(track_count), (int(20), int(60 * 5e-3 * frame.shape[0])), 0, 2e-3 * frame.shape[0],
                             (255, 255, 255), 2)
 
             det_count = int(0)
@@ -118,12 +118,12 @@ class Camera(BaseCamera):
                 det_count += 1
 
             # display counts for each class as they appear
-            y = 80
+            y = 80 * 5e-3 * frame.shape[0]
             for cls in class_counter:
                 class_count = class_counter[cls]
                 cv2.putText(frame, str(cls) + " " + str(class_count), (int(20), int(y)), 0, 2e-3 * frame.shape[0],
                             (255, 255, 255), 2)
-                y += 20
+                y += 20 * 5e-3 * frame.shape[0] #TODO apply this to other text
 
             # use YOLO counts if tracking is turned off
             if tracking:
@@ -159,4 +159,4 @@ class Camera(BaseCamera):
                             class_count_file.write(str(rounded_now) + ", " + device + ', ' + str(class_count) + "\n")
                             class_count_file.close()
 
-            yield frame
+            yield cam_id, frame
