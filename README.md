@@ -7,7 +7,7 @@ See my other repository for only YOLO v4 and Deep SORT:
 https://github.com/LeonLok/Deep-SORT-YOLOv4
 
 ## Demonstration
-
+Both examples below show multi-camera detection, tracking, and counting of people and cars.
 ### Using other people's IP camera streams I found on the internet
 ![](gifs/demonstration2.gif)
 
