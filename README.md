@@ -70,7 +70,6 @@ This project was originally intended to be an app for counting the current numbe
 <img src="gifs/object_counting1.gif" width="50%"/>
 </div>
 
-
 ***
 ## Training your own vehicle tracking model ([Link](https://github.com/LeonLok/Multi-Camera-Live-Object-Tracking/tree/master/detrac_tools))
 I trained a YOLO v4 and Deep SORT model using the [DETRAC](http://detrac-db.rit.albany.edu/) training dataset with v3 annotations. I've provided the scripts for converting the DETRAC training images and v3 annotations into the correct format for training both the YOLO v4 model as well as the Deep SORT tracking model.
