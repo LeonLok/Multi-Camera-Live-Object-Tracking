@@ -118,5 +118,6 @@ This project was built and tested on Python 3.6.
 
 * https://github.com/miguelgrinberg/flask-video-streaming
 * https://github.com/Ma-Dan/keras-yolo4
+* https://github.com/nwojke/deep_sort
 * https://github.com/Qidian213/deep_sort_yolov3
 * https://github.com/yehengchen/Object-Detection-and-Tracking
