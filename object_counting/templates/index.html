@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+* {
+  box-sizing: border-box;
+}
+
+.img-container {
+  float: left;
+  width: 30%;
+  padding: 5px;
+}
+
+.clearfix::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+</style>
+</head>
+<body>
+
+<h1>Multi-Camera Object Detection, Tracking, and Counting</h1>
+
+<div class="clearfix">
+  <div class="img-container">
+        <p align="center">Camera stream 1</p>
+        <img src="{{ url_for('video_feed', feed_type='camera', device=0) }}" class="center"  style="border:1px solid black;width:100%" alt="Camera stream 1">
+  </div>
+  <div class="img-container">
+        <p align="center">YOLO stream 1</p>
+        <img src="{{ url_for('video_feed', feed_type='yolo', device=0) }}" class="center"  style="border:1px solid black;width:100%" alt="YOLO Stream 1">
+  </div>
+</div>
+
+<div class="clearfix">
+  <div class="img-container">
+        <p align="center">Camera stream 2</p>
+        <!img src="{{ url_for('video_feed', feed_type='camera', device=1) }}" class="center"  style="border:1px solid black;width:100%" alt="Camera stream 2">
+  </div>
+  <div class="img-container">
+        <p align="center">YOLO stream 2</p>
+        <!img src="{{ url_for('video_feed', feed_type='yolo', device=1) }}" class="center"  style="border:1px solid black;width:100%" alt="YOLO Stream 2">
+  </div>
+</div>
+
+</body>
+</html>

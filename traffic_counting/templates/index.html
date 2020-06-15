@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+* {
+  box-sizing: border-box;
+}
+
+.img-container {
+  float: left;
+  width: 30%;
+  padding: 5px;
+}
+
+.clearfix::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+</style>
+</head>
+<body>
+
+<h1>Multi-camera live traffic counting with YOLO v4 and Deep SORT</h1>
+
+<div class="clearfix">
+  <div class="img-container">
+        <p align="center">Live stream 1</p>
+        <img src="{{ url_for('video_feed', feed_type='yolo', device=0) }}" class="center"  style="border:1px solid black;width:100%" alt="Live Stream 1">
+  </div>
+  <div class="img-container">
+        <p align="center">Live stream 2</p>
+        <img src="{{ url_for('video_feed', feed_type='yolo', device=1) }}" class="center"  style="border:1px solid black;width:100%" alt="Live Stream 2">
+  </div>
+</div>
+
+</body>
+</html>

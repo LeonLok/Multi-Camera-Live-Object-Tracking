@@ -1,105 +1,108 @@
-# Flask Multi-Camera Streaming With YOLO v4 and Deep SORT
-A Flask app for multiple live video streaming over a network with object detection, tracking (optional), and counting. Uses YOLO v4 with Tensorflow backend as the object detection model and Deep SORT trained on the MARS dataset for object tracking. Each video stream has an independent thread and uses ImageZMQ for asynchronous sending and processing of frames.
+<h1 align='center'>
+Multi-Camera Live Object Tracking
+</h1>
 
-Much of the way this app works is based on Miguel Grinberg's https://github.com/miguelgrinberg/flask-video-streaming. Since this is a Flask app, the video streams are accessed via web browser and it's possible to have more than one web client. If all the web clients disconnect from the app, then every video stream thread will automatically shutdown due to inactivity after a set time period. The video streams will restart once a web client connects again, but unlike Miguel's app, the camera clients that are sending the frames must be restarted.
+This repository contains my object detection and tracking projects. All of these can be hosted on a cloud server.
 
-See my other repository for only YOLO v4 and Deep SORT:
-https://github.com/LeonLok/Deep-SORT-YOLOv4
+You can also use your own IP cameras with asynchronous processing thanks to [ImageZMQ](https://github.com/jeffbass/imagezmq). I've written a blog post on how to stream using your own smartphones with ImageZMQ [here](https://towardsdatascience.com/live-video-streaming-using-multiple-smartphones-with-imagezmq-e260bd081224).
 
-## Demonstration
-Both examples below show multi-camera detection, tracking, and counting of people and cars.
-### Using other people's IP camera streams I found on the internet
-![](gifs/demonstration2.gif)
+## Deep SORT and YOLO v4
+Check out my [Deep SORT repository](https://github.com/LeonLok/Deep-SORT-YOLOv4) to see the tracking algorithm that I used which includes the options for Tensorflow 2.0, asynchronous video processing, and low confidence track filtering.
 
-### Using my own IP camera streams with two smartphones
-![](gifs/demonstration.gif)
+***
+## Traffic Counting ([Link](https://github.com/LeonLok/Multi-Camera-Live-Object-Tracking/tree/master/traffic_counting))
+This project is an extension of the object counting app.
 
-## Camera client set-up
-Enter the camera stream addresses for your own cameras in each client script and make sure that each camera client is sending frames to the correct server address and port. 
+<div align='center'>
+<img src="gifs/traffic_counting1.gif" width="80%"/>
+</div>
 
-The video_feed function in app.py contains a list of the assigned ports for each server called `port_list`. Currently, camera_client_0.py is device number 0 and it uses the first port in the list (5555). camera_client_1.py is device number 1 and it uses the second port in the list (5566). Basically, the device number corresponds to the index in `port_list`, so they need to match accordingly. If you want to add another camera, create a camera_client_2.py with a new port and add  this port to `port_list` in app.py as the third port.
+### ([Full video](https://www.youtube.com/watch?v=x6vkXf-mgaw&feature=youtu.be))
 
-You also need to make sure that the templates/index.html file contains the correct number of streams for however many you want to be displayed.
+### Features
 
-For example, if you want to activate the second camera and YOLO stream, make sure that these are uncommented:
-```
-<img src="{{ url_for('video_feed', feed_type='camera', device=1) }}"...
-```
-and 
-```
-<img src="{{ url_for('video_feed', feed_type='yolo', device=1) }}"...
-```
+* Trained using a total of **244,617** images generated from the DETRAC dataset. You can find the conversion code that I created [here](https://github.com/LeonLok/Multi-Camera-Live-Object-Tracking/tree/master/detrac_tools). 
+    * I used this [paper](https://ieeexplore.ieee.org/document/8909903) as a guideline for data preparation and training.
+* Only counts each tracking ID once.
+* Counts objects by looking at the intersection of the path of the tracked object and the counting line.
+    * Hence, those that lose tracking but are retracked with the same ID still get counted.
+* Tracked using low confidence track filtering from the same [paper](https://ieeexplore.ieee.org/document/8909903).
+    * Offers much lower false positive rate.
+    * Tracked objects show average detection confidence.
+    * Tracked classes determined by most common detection class.
+* Showing detections is optional (but hides average detection confidence).
+* Multiple IP cameras possible.
+* Directional counts can be configured based on angle.
+* Records counts for every set interval of the hour.
+    * Total count.
+    * Class-based counts.
+* Records intersection details for each counted object.
+    * Time of intersection.
+    * Coordinate of intersection.
+    * Angle of intersection.
+* Can be hosted on a cloud server.
 
-You can add more streams by following the same pattern using device=2 and so on.
-
-If you want to learn more about how the server and clients work with ZeroMQ, see ![ImageZMQ](https://github.com/jeffbass/imagezmq). The current default messaging pattern used is the request-reply pattern.
-
-### Changing camera stream names
-To change the name of each camera stream shown in the top-left corner, edit `cam_id` in the camera client files.
-
-## Model
-This app uses YOLO v4 weights that are converted from Darknet to Keras format. You need to train or convert your own and put it in the model_data folder. See https://github.com/Ma-Dan/keras-yolo4.
-
-To modify the detection settings like IOU threshold, anchors, class names etc., you can do so in yolo.py.
-
-### Detecting multiple classes
-Modify line 103 in yolo.py. For example, to detect people and cars, change it to:
-```
-            if predicted_class != 'person' and predicted_class != 'car':
-                continue
-```
-
-## Deep SORT
-Deep SORT is used for object tracking. However, Please note that the tracking model is only trained for tracking people, so you'd need to train a model yourself for tracking other objects. As you can see in the demonstration gifs, it can still work for tracking other objects like cars. 
-
-See https://github.com/nwojke/cosine_metric_learning to train your own tracking model.
-
-### Disabling Deep SORT
-However, if you don't want to use tracking at all, you can turn it off by changing line 28 from 
-```
-tracking = True
-```
-to
-```
-tracking = False
-```
+Note that since DETRAC doesn't contain any motorcycles, they are the only vehicles ignored.
 
 
-## Running locally
-First, configure each camera client so that they have the correct camera stream address. Also make sure that the frames are being sent to localhost with the correct port (e.g. tcp://localhost:5555). As mentioned earlier, you can also change the name of the camera stream by changing `cam_id` to something more relevant.
+***
+## Object Counting ([Link](https://github.com/LeonLok/Multi-Camera-Live-Object-Tracking/tree/master/object_counting))
+This project was originally intended to be an app for counting the current number of people in multiple rooms using my own smartphones, where the server would be remotely hosted. Below shows detection, tracking, and counting of people and cars.
 
-Before running, check that templates/index.html is correctly configured.
+<div align='center'>
+<img src="gifs/object_counting2.gif" width="50%"/>
+</div>
 
-Run app.py and then start running each camera client. Once everything is running, launch a web browser and enter localhost:5000. That should open index.html in the browser and the video threads should start running. The camera streams should load pretty quickly; if they don't, then try restarting the camera clients and refresh the browser. The YOLO streams will also load eventually, but they take longer to load due to starting Tensorflow and loading the YOLO model.
+### Features
 
-If the YOLO thread is shutting down before it finishes loading, you need to increase the time limit on line 117:
-```
-if time.time() - BaseCamera.last_access[unique_name] > 60:
-```
-All threads will shutdown after this time limit if the app thinks there's no more viewing web clients. If the YOLO streams are not used, then the default time limit for camera stream threads to shutdown is 5 seconds.
+* Counts the current number of objects in view.
+* Tracking is optional.
+* Multiple IP cameras possible.
+* Records current counts for every set interval of the hour.
+    * Current total count.
+    * Current class-based counts.
+* Can be hosted on a cloud server.
 
-## Running remotely
-The process is similar to running locally. If you have your own remote server, configure each camera client so that they'll be sending frames to this server address with the correct port instead of localhost (e.g. tcp://server-address-here:5555). 
+***
+## Using my own smartphones as IP cameras
 
-Clone the repository on the remote server and check that it has the correct ports forwarded so that your browser and camera clients can connect to it. Run app.py and then start running the camera clients. Like before, you should now be able to connect to the app by entering the server address with port 5000 into the browser (i.e. replace localhost:5000 with server-address-here:5000). Again, if nothing loads, try restarting the camera clients and refresh the browser.
+<div align='center'>
+<img src="gifs/object_counting1.gif" width="50%"/>
+</div>
 
-## Counts
-The total current object counts are automatically stored in a text file every set interval of the hour for every detected object. Each newly detected class also creates a new class counts file to store the current counts for that class, and will also appear as text in the YOLO stream. 
 
-## Performance
-Hardware used:
+***
+## Training your own vehicle tracking model ([Link](https://github.com/LeonLok/Multi-Camera-Live-Object-Tracking/tree/master/detrac_tools))
+I trained a YOLO v4 and Deep SORT model using the [DETRAC](http://detrac-db.rit.albany.edu/) training dataset with v3 annotations. I've provided the scripts for converting the DETRAC training images and v3 annotations into the correct format for training both the YOLO v4 model as well as the Deep SORT tracking model.
+
+### Deep SORT conversion parameters
+DETRAC images are converted into the Market 1501 training format.
+
+* Occlusion threshold - ignore vehicle sequences with too high occlusion ratio.
+* Truncation threshold - ignore vehicle sequences with too high truncation ratio.
+* Number of occurrences - vehicle sequences that are too short (i.e. not enough images) are discarded after considering occlusion and truncation ratios.
+
+### YOLO conversion parameters
+DETRAC images are converted into the Darknet YOLO training format.
+
+* Occlusion threshold - ignore vehicle sequences with too high occlusion ratio.
+* Truncation threshold - ignore vehicle sequences with too high truncation ratio.
+
+Both models were trained and evaluated on the DETRAC training set, but no evaluation has been done yet on the test set due to lack of v3 annotations and I don't have MATLAB for the Deep SORT evaluation software. It's been good enough though for my use case so far. 
+
+
+***
+## Hardware used
 * Nvidia GTX 1070 GPU
 * i7-8700K CPU
 
-Hosting the  on a local server gave ~15FPS on average with a single camera stream at 640x480 resolution streamed locally at 30FPS. Turning off tracking gave me ~16FPS. As you'd expect, having multiple streams will lower the FPS significantly as shown in the demonstration gifs.
+To give some idea of what do expect, I could run two traffic counting streams at around 10fps each (as you can see in the traffic counting gif). Of course, this heavily depends on stream resolution and how many frames are being processed for detection and tracking.
 
-There's a lot of other factors that can impact performance like network speed and bandwidth, but hopefully that gives you some idea on how it'll perform on your machine.
+***
+## YOLO v3 vs. YOLO v4
+I used YOLO v3 when I first started the object counting project which gave me about ~10FPS with tracking, making it difficult to run more than one stream at a time. Using YOLO v4 made it much easier to run two streams with a higher resolution, as well as giving a better detection accuracy.
 
-Lowering the resolution or quality of the stream will improve performance but also lower the detection accuracy. 
-
-### YOLO v3 vs. YOLO v4
-I used YOLO v3 when I first started this project which gave me about ~10FPS with tracking, making it difficult to run more than one stream at a time. Using YOLO v4 made it much easier to run two streams with a higher resolution, as well as giving a better detection accuracy.
-
+***
 ## Dependencies
 * Tensorflow-GPU 1.14
 * Keras 2.3.1
@@ -111,10 +114,10 @@ I used YOLO v3 when I first started this project which gave me about ~10FPS with
 
 This project was built and tested on Python 3.6.
 
-### Credits
-This project was built with the help of:
+***
+## Credits
+
 * https://github.com/miguelgrinberg/flask-video-streaming
-  * https://github.com/miguelgrinberg/flask-video-streaming/issues/11#issuecomment-343605510
 * https://github.com/Ma-Dan/keras-yolo4
 * https://github.com/Qidian213/deep_sort_yolov3
 * https://github.com/yehengchen/Object-Detection-and-Tracking
