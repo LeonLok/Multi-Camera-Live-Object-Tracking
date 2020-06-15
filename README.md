@@ -42,7 +42,7 @@ This project is an extension of the object counting app.
     * Angle of intersection.
 * Can be hosted on a cloud server.
 
-Note that since DETRAC doesn't contain any motorcycles, they are the only vehicles ignored.
+Note that since DETRAC doesn't contain any motorcycles, they are the only vehicles that are ignored. Additionally, the DETRAC dataset only contains images of traffic in **China**, so it struggles to correctly detect certain vehicles in other countries due to lack of training data. For example, it can frequently misclassify hatchbacks as SUVs, or not being able to detect taxis due to different colour schemes.
 
 
 ***
