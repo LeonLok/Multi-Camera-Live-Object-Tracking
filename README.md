@@ -32,6 +32,7 @@ This project is an extension of the object counting app.
     * Tracked classes determined by most common detection class.
 * Showing detections is optional (but hides average detection confidence).
 * Multiple IP cameras possible.
+* Video streaming possible via emulated IP camera.
 * Directional counts can be configured based on angle.
 * Records counts for every set interval of the hour.
     * Total count.
@@ -112,6 +113,7 @@ I used YOLO v3 when I first started the object counting project which gave me ab
 * pillow
 
 This project was built and tested on Python 3.6.
+You can use the conda environment file to set up all dependencies.
 
 ***
 ## Credits
