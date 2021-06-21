@@ -4,7 +4,7 @@ Multi-Camera Live Object Tracking
 
 This repository contains my object detection and tracking projects. All of these can be hosted on a cloud server.
 
-You can also use your own IP cameras with asynchronous processing thanks to [ImageZMQ](https://github.com/jeffbass/imagezmq). I've written a blog post on how to stream using your own smartphones with ImageZMQ [here](https://towardsdatascience.com/live-video-streaming-using-multiple-smartphones-with-imagezmq-e260bd081224?sk=88fb3d2a6a6eccb675a3d35eb28a1dd8).
+You can also use your own IP cameras with asynchronous processing thanks to [ImageZMQ](https://github.com/jeffbass/imagezmq). I've written a blog post on how to stream using your own smartphones with ImageZMQ [here](https://leonlok.co.uk/live-video-streaming-using-multiple-smartphones-with-imagezmq/).
 
 ## Deep SORT and YOLO v4
 Check out my [Deep SORT repository](https://github.com/LeonLok/Deep-SORT-YOLOv4) to see the tracking algorithm that I used which includes the options for Tensorflow 2.0, asynchronous video processing, and low confidence track filtering.
