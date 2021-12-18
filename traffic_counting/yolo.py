@@ -14,6 +14,14 @@ from yolo4.utils import letterbox_image
 import os
 from keras.utils import multi_gpu_model
 
+# Uncomment below if you get CUDNN_STATUS_ALLOC_FAILED error
+"""
+import tensorflow as tf
+config = tf.ConfigProto()
+config.gpu_options.allow_growth = True
+session = tf.Session(config=config)
+"""
+
 class YOLO(object):
     def __init__(self):
         self.model_path = 'model_data/yolo4.h5'
