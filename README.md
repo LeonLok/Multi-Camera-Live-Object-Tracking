@@ -115,6 +115,8 @@ I used YOLO v3 when I first started the object counting project which gave me ab
 This project was built and tested on Python 3.6.
 You can use the conda environment file to set up all dependencies.
 
+If environment.yml isn't working, try environment_windows.yml if you're on a Windows machine.
+
 ***
 ## Credits
 
