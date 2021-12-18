@@ -4,6 +4,8 @@ Flask Multi-Camera Traffic Counting
 
 This project was built from the [object counting app](https://github.com/LeonLok/Multi-Camera-Live-Object-Tracking/tree/master/object_counting) so the instructions are the same. The main difference is that I removed the normal camera streams in templates/index.html, leaving only the YOLO streams to be activated.
 
+If you're getting the CUDNN_STATUS_ALLOC_FAILED error, try removing the commented lines at the top of yolo.py.
+
 ***
 ## Vehicle detection and tracking models
 I trained a YOLO v4 model using Darknet and then converted it to Keras format using `convert.py` from this [repository](https://github.com/Ma-Dan/keras-yolo4). If you don't want to train a YOLO model, then follow the instructions in that repository for downloading and converting an already trained YOLO v4 model. 
