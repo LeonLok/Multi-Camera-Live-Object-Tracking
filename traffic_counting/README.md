@@ -8,9 +8,9 @@ If you're getting the CUDNN_STATUS_ALLOC_FAILED error, try removing the commente
 
 ***
 ## Vehicle detection and tracking models
-I trained a YOLO v4 model using Darknet and then converted it to Keras format using `convert.py` from this [repository](https://github.com/Ma-Dan/keras-yolo4). If you don't want to train a YOLO model, then follow the instructions in that repository for downloading and converting an already trained YOLO v4 model. 
+I trained a YOLO v4 model using Darknet and then converted it to Keras format using `convert.py` from the [Keras-to-YOLOv4 repository](https://github.com/Ma-Dan/keras-yolo4). I also trained a Deep SORT model using [cosine metric learning](https://github.com/nwojke/cosine_metric_learning). 
 
-I also trained a Deep SORT model using [cosine metric learning](https://github.com/nwojke/cosine_metric_learning).
+If you don't want to train your own YOLO or Deep SORT models, then you can go to my [Deep SORT and YOLOv4 repository](https://github.com/LeonLok/Deep-SORT-YOLOv4) and use the included Deep SORT model from [cosine metric learning](https://github.com/nwojke/cosine_metric_learning). It also includes the previously mentioned `convert.py` script. Follow the instructions in the [Keras-to-YOLOv4 repository](https://github.com/Ma-Dan/keras-yolo4) for downloading and converting an already trained Darknet YOLO v4 model to Keras format. 
 
 I've created scripts for converting the DETRAC dataset into the correct format for training [here](https://github.com/LeonLok/Multi-Camera-Live-Object-Tracking/tree/master/detrac_tools). After training and converting the weights, put the weights and classes list in the `model_data` folder.
 
