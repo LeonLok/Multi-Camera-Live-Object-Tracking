@@ -75,7 +75,11 @@ This project was originally intended to be an app for counting the current numbe
 ## Training your own vehicle tracking model ([Link](https://github.com/LeonLok/Multi-Camera-Live-Object-Tracking/tree/master/detrac_tools))
 I trained a YOLO v4 and Deep SORT model using the [DETRAC](http://detrac-db.rit.albany.edu/) training dataset with v3 annotations. I've provided the scripts for converting the DETRAC training images and v3 annotations into the correct format for training both the YOLO v4 model as well as the Deep SORT tracking model.
 
-If you don't want to train your own models, you can check out my [Deep SORT and YOLOv4 repository](https://github.com/LeonLok/Deep-SORT-YOLOv4). You can convert a trained darknet YOLOv4 model from there and use the included Deep SORT model (which I got from the [original Deep SORT repository](https://github.com/nwojke/cosine_metric_learning)). Please note that if you decide to do this, the tracking performance will most likely be worse than if you trained your own models on the DETRAC dataset or any other traffic dataset. 
+I had to train the YOLO v4 model using Darknet and then convert it to Keras format using `convert.py` from the [Keras-to-YOLOv4 repository](https://github.com/Ma-Dan/keras-yolo4). The Deep SORT model was trained using [cosine metric learning](https://github.com/nwojke/cosine_metric_learning).
+
+If you don't want to train your own models, this repository already includes the trained Deep SORT model (mars-small128.pb) from the [original Deep SORT repository](https://github.com/nwojke/cosine_metric_learning). Follow the instructions in the [Keras-to-YOLOv4 repository](https://github.com/Ma-Dan/keras-yolo4) for downloading and converting an already trained Darknet YOLO v4 model to Keras format.Alternatively, you can also find these in my [Deep SORT and YOLOv4 repository](https://github.com/LeonLok/Deep-SORT-YOLOv4)
+
+Please note that if you decide not to train your own models, the vehicle tracking performance will most likely be worse than if you trained your own models on the DETRAC dataset or any other traffic dataset. This is mainly because the original Deep SORT model (mars-small128.pb) was trained on tracking people and not vehicles. However, if your goal is to use this app to count people then this shouldn't be much of an issue.
 
 ### Deep SORT conversion parameters
 DETRAC images are converted into the Market 1501 training format.
