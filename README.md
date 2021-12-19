@@ -75,6 +75,8 @@ This project was originally intended to be an app for counting the current numbe
 ## Training your own vehicle tracking model ([Link](https://github.com/LeonLok/Multi-Camera-Live-Object-Tracking/tree/master/detrac_tools))
 I trained a YOLO v4 and Deep SORT model using the [DETRAC](http://detrac-db.rit.albany.edu/) training dataset with v3 annotations. I've provided the scripts for converting the DETRAC training images and v3 annotations into the correct format for training both the YOLO v4 model as well as the Deep SORT tracking model.
 
+If you don't want to train your own models, you can check out my [Deep SORT and YOLOv4 repository](https://github.com/LeonLok/Deep-SORT-YOLOv4). You can convert a trained darknet YOLOv4 model from there and use the included Deep SORT model (which I got from the [original Deep SORT repository](https://github.com/nwojke/cosine_metric_learning)). Please note that if you decide to do this, the tracking performance will most likely be worse than if you trained your own models on the DETRAC dataset or any other traffic dataset. 
+
 ### Deep SORT conversion parameters
 DETRAC images are converted into the Market 1501 training format.
 
